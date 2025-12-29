@@ -20,16 +20,15 @@ const markdownPreview = document.getElementById('markdown-preview');
 const fileInput = document.getElementById('file-input');
 const btnClear = document.getElementById('btn-clear');
 const btnShare = document.getElementById('btn-share');
-const btnCopyLink = document.getElementById('btn-copy-link');
 const btnDownload = document.getElementById('btn-download');
 const shareModal = document.getElementById('share-modal');
 const modalClose = document.getElementById('modal-close');
 const shareLink = document.getElementById('share-link');
 const btnCopyModal = document.getElementById('btn-copy-modal');
+const btnGenerateLink = document.getElementById('btn-generate-link');
+const linkResult = document.getElementById('link-result');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
-const btnSharePreview = document.getElementById('btn-share-preview');
-const btnShareReadonly = document.getElementById('btn-share-readonly');
 const btnBack = document.getElementById('btn-back');
 const backToEditor = document.getElementById('back-to-editor');
 const themeToggle = document.getElementById('theme-toggle');
@@ -100,24 +99,14 @@ function setupEventListeners() {
     // Bouton effacer
     btnClear.addEventListener('click', clearContent);
     
-    // Bouton partager
-    btnShare.addEventListener('click', () => generateShareLink(false));
+    // Bouton partager - ouvre la modal
+    btnShare.addEventListener('click', openShareModal);
     
-    // Bouton partager preview only (même page)
-    btnSharePreview.addEventListener('click', () => generateShareLink('preview'));
-    
-    // Bouton lecture seule (page view.html épurée)
-    btnShareReadonly.addEventListener('click', () => generateShareLink('readonly'));
+    // Bouton générer le lien dans la modal
+    btnGenerateLink.addEventListener('click', generateShareLink);
     
     // Bouton retour à l'éditeur
     btnBack.addEventListener('click', switchToEditorMode);
-    
-    // Bouton copier le lien (toolbar)
-    btnCopyLink.addEventListener('click', () => {
-        if (currentShareLink) {
-            copyToClipboard(currentShareLink);
-        }
-    });
     
     // Bouton télécharger
     btnDownload.addEventListener('click', downloadMarkdown);
@@ -139,6 +128,23 @@ function setupEventListeners() {
             closeModal();
         }
     });
+}
+
+// Open share modal
+function openShareModal() {
+    const markdown = markdownInput.value;
+    
+    if (!markdown.trim()) {
+        showToast('No content to share', 'warning');
+        return;
+    }
+    
+    // Reset modal state
+    linkResult.classList.add('hidden');
+    document.getElementById('expiration-info').classList.add('hidden');
+    
+    // Show modal
+    shareModal.classList.remove('hidden');
 }
 
 // Mettre à jour la prévisualisation
@@ -203,7 +209,7 @@ function clearContent() {
 
 // Generate a share link
 // mode: false = editor, 'preview' = preview same page, 'readonly' = view.html
-function generateShareLink(mode = false) {
+function generateShareLink() {
     const markdown = markdownInput.value;
     
     if (!markdown.trim()) {
@@ -211,22 +217,37 @@ function generateShareLink(mode = false) {
         return;
     }
     
+    // Get selected mode
+    const modeRadio = document.querySelector('input[name="share-mode"]:checked');
+    const mode = modeRadio ? modeRadio.value : 'editor';
+    
     try {
         // Compresser et encoder le contenu en base64
         const encoded = encodeContent(markdown);
+        
+        // Get expiration setting
+        const expirationSelect = document.getElementById('expiration-select');
+        const expirationHours = parseInt(expirationSelect.value);
+        let expirationParam = '';
+        let expirationDate = null;
+        
+        if (expirationHours > 0) {
+            expirationDate = new Date(Date.now() + expirationHours * 60 * 60 * 1000);
+            expirationParam = `&exp=${expirationDate.getTime()}`;
+        }
         
         // Construire l'URL selon le mode
         const basePath = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
         
         if (mode === 'readonly') {
             // Page épurée view.html
-            currentShareLink = `${basePath}view.html#md=${encoded}`;
+            currentShareLink = `${basePath}view.html#md=${encoded}${expirationParam}`;
         } else if (mode === 'preview') {
             // Même page avec mode preview
-            currentShareLink = `${basePath}index.html#md=${encoded}&mode=preview`;
+            currentShareLink = `${basePath}index.html#md=${encoded}&mode=preview${expirationParam}`;
         } else {
             // Mode éditeur normal
-            currentShareLink = `${basePath}index.html#md=${encoded}`;
+            currentShareLink = `${basePath}index.html#md=${encoded}${expirationParam}`;
         }
         
         // Check URL length
@@ -235,15 +256,37 @@ function generateShareLink(mode = false) {
             return;
         }
         
-        // Afficher le modal
+        // Show link result
         shareLink.value = currentShareLink;
-        shareModal.classList.remove('hidden');
-        btnCopyLink.disabled = false;
+        linkResult.classList.remove('hidden');
+        
+        // Update expiration info
+        const expirationInfo = document.getElementById('expiration-info');
+        if (expirationDate) {
+            expirationInfo.textContent = `⏰ This link expires on ${formatDate(expirationDate)}`;
+            expirationInfo.classList.remove('hidden');
+        } else {
+            expirationInfo.textContent = '♾️ This link never expires';
+            expirationInfo.classList.remove('hidden');
+        }
+        
+        showToast('Link generated!');
         
     } catch (error) {
         console.error('Error generating link:', error);
         showToast('Error generating link', 'error');
     }
+}
+
+// Format date for display
+function formatDate(date) {
+    return date.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
 // Encoder le contenu pour l'URL
@@ -282,12 +325,21 @@ function loadFromUrl() {
     const hash = window.location.hash;
     
     if (hash.startsWith('#md=')) {
-        // Extraire le contenu et vérifier le mode
+        // Parse hash parameters
         const hashContent = hash.slice(4);
-        const isPreviewMode = hashContent.includes('&mode=preview');
-        const encoded = hashContent.replace('&mode=preview', '');
+        const params = parseHashParams(hashContent);
         
-        const content = decodeContent(encoded);
+        // Check expiration first
+        if (params.exp) {
+            const expirationTime = parseInt(params.exp);
+            if (Date.now() > expirationTime) {
+                showExpiredMessage(new Date(expirationTime));
+                return;
+            }
+        }
+        
+        const isPreviewMode = params.mode === 'preview';
+        const content = decodeContent(params.md);
         
         if (content) {
             markdownInput.value = content;
@@ -306,6 +358,44 @@ function loadFromUrl() {
             showToast('Unable to load shared content', 'error');
         }
     }
+}
+
+// Parse hash parameters
+function parseHashParams(hashContent) {
+    const result = { md: '' };
+    const parts = hashContent.split('&');
+    
+    // First part is always the md content
+    result.md = parts[0];
+    
+    // Parse other parameters
+    for (let i = 1; i < parts.length; i++) {
+        const [key, value] = parts[i].split('=');
+        if (key && value !== undefined) {
+            result[key] = value;
+        } else if (key) {
+            result[key] = true;
+        }
+    }
+    
+    return result;
+}
+
+// Show expired message
+function showExpiredMessage(expirationDate) {
+    const container = document.querySelector('.container');
+    container.innerHTML = `
+        <div class="expired-message">
+            <h1>⏰</h1>
+            <h2>Link Expired</h2>
+            <p>This shared link has expired and is no longer available.</p>
+            <p class="expired-date">Expired on: ${formatDate(expirationDate)}</p>
+            <a href="index.html">Create a new document</a>
+        </div>
+    `;
+    
+    // Hide toolbar
+    document.querySelector('.toolbar').style.display = 'none';
 }
 
 // Switch to editor mode
