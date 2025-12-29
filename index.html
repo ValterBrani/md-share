@@ -38,9 +38,6 @@
             </div>
             <div class="toolbar-right">
                 <button id="btn-share" class="btn btn-success">🔗 Share</button>
-                <button id="btn-share-preview" class="btn btn-preview">👁️ Share Preview</button>
-                <button id="btn-share-readonly" class="btn btn-readonly">📄 Read-only</button>
-                <button id="btn-copy-link" class="btn btn-info" disabled>📋 Copy link</button>
                 <button id="btn-download" class="btn btn-secondary">💾 Download</button>
             </div>
         </div>
@@ -89,22 +86,68 @@ console.log('Hello, Markdown!');
                     <button id="modal-close" class="btn-close">&times;</button>
                 </div>
                 <div class="modal-body">
+                    <!-- Share mode selector -->
+                    <div class="mode-selector">
+                        <label>📌 Share mode:</label>
+                        <div class="mode-options">
+                            <label class="mode-option">
+                                <input type="radio" name="share-mode" value="editor" checked>
+                                <span class="mode-label">
+                                    <span class="mode-icon">✏️</span>
+                                    <span class="mode-text">
+                                        <strong>Editor</strong>
+                                        <small>Recipients can edit</small>
+                                    </span>
+                                </span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="share-mode" value="preview">
+                                <span class="mode-label">
+                                    <span class="mode-icon">👁️</span>
+                                    <span class="mode-text">
+                                        <strong>Preview</strong>
+                                        <small>Same page, read-only</small>
+                                    </span>
+                                </span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="share-mode" value="readonly">
+                                <span class="mode-label">
+                                    <span class="mode-icon">📄</span>
+                                    <span class="mode-text">
+                                        <strong>Read-only</strong>
+                                        <small>Clean page, ideal for CV</small>
+                                    </span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Expiration selector -->
                     <div class="expiration-selector">
-                        <label for="expiration-select">⏱️ Link expiration:</label>
+                        <label for="expiration-select">⏱️ Expiration:</label>
                         <select id="expiration-select">
                             <option value="0">Never</option>
                             <option value="1">1 hour</option>
                             <option value="24">24 hours</option>
-                            <option value="168">7 days</option>
+                            <option value="168" selected>7 days</option>
                             <option value="720">30 days</option>
                         </select>
                     </div>
-                    <p>Use this link to share your content:</p>
-                    <div class="share-link-container">
-                        <input type="text" id="share-link" readonly>
-                        <button id="btn-copy-modal" class="btn btn-primary">Copy</button>
+
+                    <!-- Generate button -->
+                    <button id="btn-generate-link" class="btn btn-success btn-generate">🔗 Generate Link</button>
+
+                    <!-- Link result (hidden initially) -->
+                    <div id="link-result" class="link-result hidden">
+                        <p>Your share link:</p>
+                        <div class="share-link-container">
+                            <input type="text" id="share-link" readonly>
+                            <button id="btn-copy-modal" class="btn btn-primary">Copy</button>
+                        </div>
+                        <p id="expiration-info" class="expiration-info hidden"></p>
                     </div>
-                    <p id="expiration-info" class="expiration-info hidden"></p>
+
                     <p class="share-note">
                         ⚠️ Note: Content is encoded in the URL. Very long files may not work with some browsers.
                     </p>

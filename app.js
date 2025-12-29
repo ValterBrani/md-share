@@ -20,16 +20,15 @@ const markdownPreview = document.getElementById('markdown-preview');
 const fileInput = document.getElementById('file-input');
 const btnClear = document.getElementById('btn-clear');
 const btnShare = document.getElementById('btn-share');
-const btnCopyLink = document.getElementById('btn-copy-link');
 const btnDownload = document.getElementById('btn-download');
 const shareModal = document.getElementById('share-modal');
 const modalClose = document.getElementById('modal-close');
 const shareLink = document.getElementById('share-link');
 const btnCopyModal = document.getElementById('btn-copy-modal');
+const btnGenerateLink = document.getElementById('btn-generate-link');
+const linkResult = document.getElementById('link-result');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
-const btnSharePreview = document.getElementById('btn-share-preview');
-const btnShareReadonly = document.getElementById('btn-share-readonly');
 const btnBack = document.getElementById('btn-back');
 const backToEditor = document.getElementById('back-to-editor');
 const themeToggle = document.getElementById('theme-toggle');
@@ -100,24 +99,14 @@ function setupEventListeners() {
     // Bouton effacer
     btnClear.addEventListener('click', clearContent);
     
-    // Bouton partager
-    btnShare.addEventListener('click', () => generateShareLink(false));
+    // Bouton partager - ouvre la modal
+    btnShare.addEventListener('click', openShareModal);
     
-    // Bouton partager preview only (même page)
-    btnSharePreview.addEventListener('click', () => generateShareLink('preview'));
-    
-    // Bouton lecture seule (page view.html épurée)
-    btnShareReadonly.addEventListener('click', () => generateShareLink('readonly'));
+    // Bouton générer le lien dans la modal
+    btnGenerateLink.addEventListener('click', generateShareLink);
     
     // Bouton retour à l'éditeur
     btnBack.addEventListener('click', switchToEditorMode);
-    
-    // Bouton copier le lien (toolbar)
-    btnCopyLink.addEventListener('click', () => {
-        if (currentShareLink) {
-            copyToClipboard(currentShareLink);
-        }
-    });
     
     // Bouton télécharger
     btnDownload.addEventListener('click', downloadMarkdown);
@@ -139,6 +128,23 @@ function setupEventListeners() {
             closeModal();
         }
     });
+}
+
+// Open share modal
+function openShareModal() {
+    const markdown = markdownInput.value;
+    
+    if (!markdown.trim()) {
+        showToast('No content to share', 'warning');
+        return;
+    }
+    
+    // Reset modal state
+    linkResult.classList.add('hidden');
+    document.getElementById('expiration-info').classList.add('hidden');
+    
+    // Show modal
+    shareModal.classList.remove('hidden');
 }
 
 // Mettre à jour la prévisualisation
@@ -203,13 +209,17 @@ function clearContent() {
 
 // Generate a share link
 // mode: false = editor, 'preview' = preview same page, 'readonly' = view.html
-function generateShareLink(mode = false) {
+function generateShareLink() {
     const markdown = markdownInput.value;
     
     if (!markdown.trim()) {
         showToast('No content to share', 'warning');
         return;
     }
+    
+    // Get selected mode
+    const modeRadio = document.querySelector('input[name="share-mode"]:checked');
+    const mode = modeRadio ? modeRadio.value : 'editor';
     
     try {
         // Compresser et encoder le contenu en base64
@@ -246,10 +256,9 @@ function generateShareLink(mode = false) {
             return;
         }
         
-        // Afficher le modal
+        // Show link result
         shareLink.value = currentShareLink;
-        shareModal.classList.remove('hidden');
-        btnCopyLink.disabled = false;
+        linkResult.classList.remove('hidden');
         
         // Update expiration info
         const expirationInfo = document.getElementById('expiration-info');
@@ -257,8 +266,11 @@ function generateShareLink(mode = false) {
             expirationInfo.textContent = `⏰ This link expires on ${formatDate(expirationDate)}`;
             expirationInfo.classList.remove('hidden');
         } else {
-            expirationInfo.classList.add('hidden');
+            expirationInfo.textContent = '♾️ This link never expires';
+            expirationInfo.classList.remove('hidden');
         }
+        
+        showToast('Link generated!');
         
     } catch (error) {
         console.error('Error generating link:', error);
