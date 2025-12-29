@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -182,10 +183,66 @@
                 max-width: none;
                 padding: 0;
             }
+            .pdf-header {
+                display: none !important;
+            }
+        }
+
+        /* PDF Button Header */
+        .pdf-header {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+        }
+
+        .btn-pdf {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #6a737d;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-pdf:hover {
+            color: #24292e;
+            background: #ffffff;
+            border-color: #d1d5da;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-pdf:active {
+            transform: scale(0.98);
+        }
+
+        .btn-pdf.loading {
+            opacity: 0.7;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
+    <!-- Bouton PDF discret -->
+    <div class="pdf-header">
+        <button class="btn-pdf" id="btn-pdf" title="Télécharger en PDF">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+            PDF
+        </button>
+    </div>
+
     <article class="container" id="content">
         <div class="loading">Chargement...</div>
     </article>
@@ -257,7 +314,45 @@
                     <p><a href="index.html">Créer un nouveau document</a></p>
                 </div>
             `;
+            // Cacher le bouton PDF s'il n'y a pas de contenu
+            document.getElementById('btn-pdf').style.display = 'none';
         }
+
+        // Générer le PDF
+        function generatePDF() {
+            const btn = document.getElementById('btn-pdf');
+            const content = document.getElementById('content');
+            
+            // État loading
+            btn.classList.add('loading');
+            btn.innerHTML = '⏳ Génération...';
+            
+            // Options PDF
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: (document.title.replace(' - MD Partage', '') || 'document') + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(content).save().then(() => {
+                // Restaurer le bouton
+                btn.classList.remove('loading');
+                btn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="12" y1="18" x2="12" y2="12"></line>
+                        <line x1="9" y1="15" x2="15" y2="15"></line>
+                    </svg>
+                    PDF
+                `;
+            });
+        }
+
+        // Event listener pour le bouton PDF
+        document.getElementById('btn-pdf').addEventListener('click', generatePDF);
 
         init();
     </script>
