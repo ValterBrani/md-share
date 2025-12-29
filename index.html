@@ -89,11 +89,22 @@ console.log('Hello, Markdown!');
                     <button id="modal-close" class="btn-close">&times;</button>
                 </div>
                 <div class="modal-body">
+                    <div class="expiration-selector">
+                        <label for="expiration-select">⏱️ Link expiration:</label>
+                        <select id="expiration-select">
+                            <option value="0">Never</option>
+                            <option value="1">1 hour</option>
+                            <option value="24">24 hours</option>
+                            <option value="168">7 days</option>
+                            <option value="720">30 days</option>
+                        </select>
+                    </div>
                     <p>Use this link to share your content:</p>
                     <div class="share-link-container">
                         <input type="text" id="share-link" readonly>
                         <button id="btn-copy-modal" class="btn btn-primary">Copy</button>
                     </div>
+                    <p id="expiration-info" class="expiration-info hidden"></p>
                     <p class="share-note">
                         ⚠️ Note: Content is encoded in the URL. Very long files may not work with some browsers.
                     </p>

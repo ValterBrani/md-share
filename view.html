@@ -557,14 +557,66 @@
             }
         }
 
+        // Parse hash parameters
+        function parseHashParams(hashContent) {
+            const result = { md: '' };
+            const parts = hashContent.split('&');
+            result.md = parts[0];
+            for (let i = 1; i < parts.length; i++) {
+                const [key, value] = parts[i].split('=');
+                if (key && value !== undefined) {
+                    result[key] = value;
+                }
+            }
+            return result;
+        }
+
+        // Format date
+        function formatDate(date) {
+            return date.toLocaleString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Show expired message
+        function showExpired(expirationDate) {
+            document.getElementById('content').innerHTML = `
+                <div class="error">
+                    <h1>⏰</h1>
+                    <h2 style="color: var(--accent); border: none; background: none; -webkit-text-fill-color: var(--accent);">Link Expired</h2>
+                    <p>This shared link has expired and is no longer available.</p>
+                    <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--text-muted);">
+                        Expired on: ${formatDate(expirationDate)}
+                    </p>
+                    <a href="index.html">Create a new document</a>
+                </div>
+            `;
+            document.getElementById('btn-pdf').style.display = 'none';
+        }
+
         // Load and display
         function init() {
             const container = document.getElementById('content');
             const hash = window.location.hash;
 
             if (hash.startsWith('#md=')) {
-                const encoded = hash.slice(4).replace('&mode=preview', '');
-                const content = decodeContent(encoded);
+                const hashContent = hash.slice(4);
+                const params = parseHashParams(hashContent);
+                
+                // Check expiration
+                if (params.exp) {
+                    const expirationTime = parseInt(params.exp);
+                    if (Date.now() > expirationTime) {
+                        showExpired(new Date(expirationTime));
+                        return;
+                    }
+                }
+                
+                const content = decodeContent(params.md);
 
                 if (content) {
                     container.innerHTML = marked.parse(content);

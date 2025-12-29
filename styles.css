@@ -649,6 +649,107 @@ main {
     border-radius: var(--radius-sm);
 }
 
+/* Expiration Selector */
+.expiration-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.expiration-selector label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.expiration-selector select {
+    flex: 1;
+    padding: 0.625rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.expiration-selector select:hover {
+    border-color: var(--primary);
+}
+
+.expiration-selector select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.expiration-info {
+    font-size: 0.85rem;
+    color: var(--accent);
+    padding: 0.75rem;
+    background: rgba(6, 182, 212, 0.1);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    border-radius: var(--radius-sm);
+    margin-top: 0.75rem;
+}
+
+.expiration-info.hidden {
+    display: none;
+}
+
+/* Expired Message */
+.expired-message {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.expired-message h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.expired-message h2 {
+    color: var(--danger);
+    margin-bottom: 1rem;
+    border: none;
+    padding: 0;
+}
+
+.expired-message p {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.expired-message .expired-date {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.expired-message a {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-normal);
+}
+
+.expired-message a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
 /* Modern Toast */
 .toast {
     position: fixed;
