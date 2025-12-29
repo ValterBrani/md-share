@@ -29,6 +29,7 @@ const btnCopyModal = document.getElementById('btn-copy-modal');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
 const btnSharePreview = document.getElementById('btn-share-preview');
+const btnShareReadonly = document.getElementById('btn-share-readonly');
 const btnBack = document.getElementById('btn-back');
 const backToEditor = document.getElementById('back-to-editor');
 
@@ -58,8 +59,11 @@ function setupEventListeners() {
     // Bouton partager
     btnShare.addEventListener('click', () => generateShareLink(false));
     
-    // Bouton partager preview only
-    btnSharePreview.addEventListener('click', () => generateShareLink(true));
+    // Bouton partager preview only (même page)
+    btnSharePreview.addEventListener('click', () => generateShareLink('preview'));
+    
+    // Bouton lecture seule (page view.html épurée)
+    btnShareReadonly.addEventListener('click', () => generateShareLink('readonly'));
     
     // Bouton retour à l'éditeur
     btnBack.addEventListener('click', switchToEditorMode);
@@ -154,7 +158,8 @@ function clearContent() {
 }
 
 // Générer un lien de partage
-function generateShareLink(previewOnly = false) {
+// mode: false = éditeur, 'preview' = preview même page, 'readonly' = view.html
+function generateShareLink(mode = false) {
     const markdown = markdownInput.value;
     
     if (!markdown.trim()) {
@@ -166,10 +171,19 @@ function generateShareLink(previewOnly = false) {
         // Compresser et encoder le contenu en base64
         const encoded = encodeContent(markdown);
         
-        // Construire l'URL avec le mode preview si demandé
-        const baseUrl = window.location.origin + window.location.pathname;
-        const modeParam = previewOnly ? '&mode=preview' : '';
-        currentShareLink = `${baseUrl}#md=${encoded}${modeParam}`;
+        // Construire l'URL selon le mode
+        const basePath = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+        
+        if (mode === 'readonly') {
+            // Page épurée view.html
+            currentShareLink = `${basePath}view.html#md=${encoded}`;
+        } else if (mode === 'preview') {
+            // Même page avec mode preview
+            currentShareLink = `${basePath}index.html#md=${encoded}&mode=preview`;
+        } else {
+            // Mode éditeur normal
+            currentShareLink = `${basePath}index.html#md=${encoded}`;
+        }
         
         // Vérifier la longueur de l'URL
         if (currentShareLink.length > 32000) {

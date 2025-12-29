@@ -154,6 +154,15 @@ main {
     background: linear-gradient(135deg, #5a32a3, #d63384);
 }
 
+.btn-readonly {
+    background: linear-gradient(135deg, #20c997, #0dcaf0);
+    color: white;
+}
+
+.btn-readonly:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1aa179, #0aa2c0);
+}
+
 /* Container principal */
 .container {
     display: grid;
