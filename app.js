@@ -28,6 +28,9 @@ const shareLink = document.getElementById('share-link');
 const btnCopyModal = document.getElementById('btn-copy-modal');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
+const btnSharePreview = document.getElementById('btn-share-preview');
+const btnBack = document.getElementById('btn-back');
+const backToEditor = document.getElementById('back-to-editor');
 
 // Variable pour stocker le lien de partage actuel
 let currentShareLink = '';
@@ -53,7 +56,13 @@ function setupEventListeners() {
     btnClear.addEventListener('click', clearContent);
     
     // Bouton partager
-    btnShare.addEventListener('click', generateShareLink);
+    btnShare.addEventListener('click', () => generateShareLink(false));
+    
+    // Bouton partager preview only
+    btnSharePreview.addEventListener('click', () => generateShareLink(true));
+    
+    // Bouton retour à l'éditeur
+    btnBack.addEventListener('click', switchToEditorMode);
     
     // Bouton copier le lien (toolbar)
     btnCopyLink.addEventListener('click', () => {
@@ -145,7 +154,7 @@ function clearContent() {
 }
 
 // Générer un lien de partage
-function generateShareLink() {
+function generateShareLink(previewOnly = false) {
     const markdown = markdownInput.value;
     
     if (!markdown.trim()) {
@@ -157,9 +166,10 @@ function generateShareLink() {
         // Compresser et encoder le contenu en base64
         const encoded = encodeContent(markdown);
         
-        // Construire l'URL
+        // Construire l'URL avec le mode preview si demandé
         const baseUrl = window.location.origin + window.location.pathname;
-        currentShareLink = `${baseUrl}#md=${encoded}`;
+        const modeParam = previewOnly ? '&mode=preview' : '';
+        currentShareLink = `${baseUrl}#md=${encoded}${modeParam}`;
         
         // Vérifier la longueur de l'URL
         if (currentShareLink.length > 32000) {
@@ -214,20 +224,38 @@ function loadFromUrl() {
     const hash = window.location.hash;
     
     if (hash.startsWith('#md=')) {
-        const encoded = hash.slice(4);
+        // Extraire le contenu et vérifier le mode
+        const hashContent = hash.slice(4);
+        const isPreviewMode = hashContent.includes('&mode=preview');
+        const encoded = hashContent.replace('&mode=preview', '');
+        
         const content = decodeContent(encoded);
         
         if (content) {
             markdownInput.value = content;
             updatePreview();
-            showToast('Contenu chargé depuis le lien partagé');
             
-            // Nettoyer l'URL sans recharger la page
-            history.replaceState(null, '', window.location.pathname);
+            if (isPreviewMode) {
+                // Activer le mode preview-only
+                document.body.classList.add('preview-mode');
+                showToast('Mode prévisualisation');
+            } else {
+                showToast('Contenu chargé depuis le lien partagé');
+                // Nettoyer l'URL sans recharger la page
+                history.replaceState(null, '', window.location.pathname);
+            }
         } else {
             showToast('Impossible de charger le contenu partagé', 'error');
         }
     }
+}
+
+// Basculer vers le mode éditeur
+function switchToEditorMode() {
+    document.body.classList.remove('preview-mode');
+    // Nettoyer l'URL
+    history.replaceState(null, '', window.location.pathname);
+    showToast('Mode éditeur activé');
 }
 
 // Télécharger le markdown

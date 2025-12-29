@@ -28,6 +28,7 @@
             </div>
             <div class="toolbar-right">
                 <button id="btn-share" class="btn btn-success">🔗 Partager</button>
+                <button id="btn-share-preview" class="btn btn-preview">👁️ Partager Preview</button>
                 <button id="btn-copy-link" class="btn btn-info" disabled>📋 Copier le lien</button>
                 <button id="btn-download" class="btn btn-secondary">💾 Télécharger</button>
             </div>
@@ -87,6 +88,11 @@ console.log('Hello, Markdown!');
                     </p>
                 </div>
             </div>
+        </div>
+
+        <!-- Bouton retour pour le mode preview -->
+        <div id="back-to-editor" class="back-button hidden">
+            <button id="btn-back" class="btn btn-primary">✏️ Ouvrir dans l'éditeur</button>
         </div>
 
         <!-- Toast notification -->

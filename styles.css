@@ -145,6 +145,15 @@ main {
     background-color: var(--secondary-hover);
 }
 
+.btn-preview {
+    background: linear-gradient(135deg, #6f42c1, #e83e8c);
+    color: white;
+}
+
+.btn-preview:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5a32a3, #d63384);
+}
+
 /* Container principal */
 .container {
     display: grid;
@@ -443,6 +452,42 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
+}
+
+/* Mode Preview Only */
+body.preview-mode header {
+    background: linear-gradient(135deg, #6f42c1, #e83e8c);
+}
+
+body.preview-mode .toolbar {
+    display: none;
+}
+
+body.preview-mode .editor-panel {
+    display: none;
+}
+
+body.preview-mode .container {
+    grid-template-columns: 1fr;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+body.preview-mode .preview-panel {
+    min-height: calc(100vh - 200px);
+}
+
+body.preview-mode .back-button {
+    display: block !important;
+}
+
+.back-button {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.back-button.hidden {
+    display: none;
 }
 
 /* Responsive */
