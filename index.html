@@ -1,99 +1,99 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MD Partage - Éditeur et Visualiseur Markdown</title>
+    <title>MD Share - Markdown Editor and Viewer</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Marked.js pour parser le Markdown -->
+    <!-- Marked.js for parsing Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Highlight.js pour la coloration syntaxique du code -->
+    <!-- Highlight.js for code syntax highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 <body>
     <header>
-        <h1>📝 MD Partage</h1>
-        <p class="subtitle">Éditeur et visualiseur Markdown avec partage facile</p>
+        <h1>📝 MD Share</h1>
+        <p class="subtitle">Markdown editor and viewer with easy sharing</p>
     </header>
 
     <main>
         <div class="toolbar">
             <div class="toolbar-left">
                 <label for="file-input" class="btn btn-primary">
-                    📁 Charger un fichier
+                    📁 Load file
                 </label>
                 <input type="file" id="file-input" accept=".md,.markdown,.txt" hidden>
-                <button id="btn-clear" class="btn btn-secondary">🗑️ Effacer</button>
+                <button id="btn-clear" class="btn btn-secondary">🗑️ Clear</button>
             </div>
             <div class="toolbar-right">
-                <button id="btn-share" class="btn btn-success">🔗 Partager</button>
-                <button id="btn-share-preview" class="btn btn-preview">👁️ Partager Preview</button>
-                <button id="btn-share-readonly" class="btn btn-readonly">📄 Lecture seule</button>
-                <button id="btn-copy-link" class="btn btn-info" disabled>📋 Copier le lien</button>
-                <button id="btn-download" class="btn btn-secondary">💾 Télécharger</button>
+                <button id="btn-share" class="btn btn-success">🔗 Share</button>
+                <button id="btn-share-preview" class="btn btn-preview">👁️ Share Preview</button>
+                <button id="btn-share-readonly" class="btn btn-readonly">📄 Read-only</button>
+                <button id="btn-copy-link" class="btn btn-info" disabled>📋 Copy link</button>
+                <button id="btn-download" class="btn btn-secondary">💾 Download</button>
             </div>
         </div>
 
         <div class="container">
             <div class="panel editor-panel">
                 <div class="panel-header">
-                    <h2>✏️ Éditeur Markdown</h2>
+                    <h2>✏️ Markdown Editor</h2>
                 </div>
-                <textarea id="markdown-input" placeholder="Écrivez votre Markdown ici...
+                <textarea id="markdown-input" placeholder="Write your Markdown here...
 
-# Exemple de titre
+# Example title
 
-## Sous-titre
+## Subtitle
 
-Voici un paragraphe avec du **texte en gras** et du *texte en italique*.
+Here is a paragraph with **bold text** and *italic text*.
 
-- Liste item 1
-- Liste item 2
-- Liste item 3
+- List item 1
+- List item 2
+- List item 3
 
 ```javascript
-// Bloc de code
+// Code block
 console.log('Hello, Markdown!');
 ```
 
-[Un lien](https://example.com)
+[A link](https://example.com)
 "></textarea>
             </div>
 
             <div class="panel preview-panel">
                 <div class="panel-header">
-                    <h2>👁️ Prévisualisation</h2>
+                    <h2>👁️ Preview</h2>
                 </div>
                 <div id="markdown-preview" class="preview-content">
-                    <p class="placeholder-text">La prévisualisation apparaîtra ici...</p>
+                    <p class="placeholder-text">Preview will appear here...</p>
                 </div>
             </div>
         </div>
 
-        <!-- Modal de partage -->
+        <!-- Share modal -->
         <div id="share-modal" class="modal hidden">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>🔗 Partager votre Markdown</h3>
+                    <h3>🔗 Share your Markdown</h3>
                     <button id="modal-close" class="btn-close">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p>Utilisez ce lien pour partager votre contenu :</p>
+                    <p>Use this link to share your content:</p>
                     <div class="share-link-container">
                         <input type="text" id="share-link" readonly>
-                        <button id="btn-copy-modal" class="btn btn-primary">Copier</button>
+                        <button id="btn-copy-modal" class="btn btn-primary">Copy</button>
                     </div>
                     <p class="share-note">
-                        ⚠️ Note : Le contenu est encodé dans l'URL. Les fichiers très longs peuvent ne pas fonctionner avec certains navigateurs.
+                        ⚠️ Note: Content is encoded in the URL. Very long files may not work with some browsers.
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Bouton retour pour le mode preview -->
+        <!-- Back button for preview mode -->
         <div id="back-to-editor" class="back-button hidden">
-            <button id="btn-back" class="btn btn-primary">✏️ Ouvrir dans l'éditeur</button>
+            <button id="btn-back" class="btn btn-primary">✏️ Open in editor</button>
         </div>
 
         <!-- Toast notification -->
@@ -103,7 +103,7 @@ console.log('Hello, Markdown!');
     </main>
 
     <footer>
-        <p>MD Partage - Créé avec ❤️ | <a href="https://github.com" target="_blank">GitHub</a></p>
+        <p>MD Share © 2025</p>
     </footer>
 
     <script src="app.js"></script>

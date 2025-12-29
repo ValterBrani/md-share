@@ -102,7 +102,7 @@ function updatePreview() {
     const markdown = markdownInput.value;
     
     if (!markdown.trim()) {
-        markdownPreview.innerHTML = '<p class="placeholder-text">La prévisualisation apparaîtra ici...</p>';
+        markdownPreview.innerHTML = '<p class="placeholder-text">Preview will appear here...</p>';
         return;
     }
     
@@ -110,13 +110,13 @@ function updatePreview() {
         const html = marked.parse(markdown);
         markdownPreview.innerHTML = html;
         
-        // Appliquer la coloration syntaxique aux blocs de code
+        // Apply syntax highlighting to code blocks
         markdownPreview.querySelectorAll('pre code').forEach((block) => {
             hljs.highlightElement(block);
         });
     } catch (error) {
-        console.error('Erreur de parsing Markdown:', error);
-        markdownPreview.innerHTML = '<p class="placeholder-text">Erreur lors du rendu du Markdown</p>';
+        console.error('Markdown parsing error:', error);
+        markdownPreview.innerHTML = '<p class="placeholder-text">Error rendering Markdown</p>';
     }
 }
 
@@ -131,11 +131,11 @@ function handleFileLoad(event) {
     reader.onload = (e) => {
         markdownInput.value = e.target.result;
         updatePreview();
-        showToast(`Fichier "${file.name}" chargé avec succès`);
+        showToast(`File "${file.name}" loaded successfully`);
     };
     
     reader.onerror = () => {
-        showToast('Erreur lors de la lecture du fichier', 'error');
+        showToast('Error reading file', 'error');
     };
     
     reader.readAsText(file);
@@ -146,7 +146,7 @@ function handleFileLoad(event) {
 
 // Effacer le contenu
 function clearContent() {
-    if (markdownInput.value && !confirm('Êtes-vous sûr de vouloir effacer tout le contenu ?')) {
+    if (markdownInput.value && !confirm('Are you sure you want to clear all content?')) {
         return;
     }
     
@@ -154,16 +154,16 @@ function clearContent() {
     updatePreview();
     currentShareLink = '';
     btnCopyLink.disabled = true;
-    showToast('Contenu effacé');
+    showToast('Content cleared');
 }
 
-// Générer un lien de partage
-// mode: false = éditeur, 'preview' = preview même page, 'readonly' = view.html
+// Generate a share link
+// mode: false = editor, 'preview' = preview same page, 'readonly' = view.html
 function generateShareLink(mode = false) {
     const markdown = markdownInput.value;
     
     if (!markdown.trim()) {
-        showToast('Aucun contenu à partager', 'warning');
+        showToast('No content to share', 'warning');
         return;
     }
     
@@ -185,9 +185,9 @@ function generateShareLink(mode = false) {
             currentShareLink = `${basePath}index.html#md=${encoded}`;
         }
         
-        // Vérifier la longueur de l'URL
+        // Check URL length
         if (currentShareLink.length > 32000) {
-            showToast('Le contenu est trop long pour être partagé via URL', 'error');
+            showToast('Content is too long to share via URL', 'error');
             return;
         }
         
@@ -197,8 +197,8 @@ function generateShareLink(mode = false) {
         btnCopyLink.disabled = false;
         
     } catch (error) {
-        console.error('Erreur lors de la génération du lien:', error);
-        showToast('Erreur lors de la génération du lien', 'error');
+        console.error('Error generating link:', error);
+        showToast('Error generating link', 'error');
     }
 }
 
@@ -250,34 +250,34 @@ function loadFromUrl() {
             updatePreview();
             
             if (isPreviewMode) {
-                // Activer le mode preview-only
+                // Activate preview-only mode
                 document.body.classList.add('preview-mode');
-                showToast('Mode prévisualisation');
+                showToast('Preview mode');
             } else {
-                showToast('Contenu chargé depuis le lien partagé');
-                // Nettoyer l'URL sans recharger la page
+                showToast('Content loaded from shared link');
+                // Clean URL without reloading
                 history.replaceState(null, '', window.location.pathname);
             }
         } else {
-            showToast('Impossible de charger le contenu partagé', 'error');
+            showToast('Unable to load shared content', 'error');
         }
     }
 }
 
-// Basculer vers le mode éditeur
+// Switch to editor mode
 function switchToEditorMode() {
     document.body.classList.remove('preview-mode');
-    // Nettoyer l'URL
+    // Clean URL
     history.replaceState(null, '', window.location.pathname);
-    showToast('Mode éditeur activé');
+    showToast('Editor mode activated');
 }
 
-// Télécharger le markdown
+// Download markdown
 function downloadMarkdown() {
     const content = markdownInput.value;
     
     if (!content.trim()) {
-        showToast('Aucun contenu à télécharger', 'warning');
+        showToast('No content to download', 'warning');
         return;
     }
     
@@ -292,16 +292,16 @@ function downloadMarkdown() {
     document.body.removeChild(link);
     
     URL.revokeObjectURL(url);
-    showToast('Fichier téléchargé');
+    showToast('File downloaded');
 }
 
-// Copier dans le presse-papier
+// Copy to clipboard
 async function copyToClipboard(text) {
     try {
         await navigator.clipboard.writeText(text);
-        showToast('Lien copié dans le presse-papier');
+        showToast('Link copied to clipboard');
     } catch (error) {
-        // Fallback pour les navigateurs plus anciens
+        // Fallback for older browsers
         const textArea = document.createElement('textarea');
         textArea.value = text;
         textArea.style.position = 'fixed';
@@ -311,9 +311,9 @@ async function copyToClipboard(text) {
         
         try {
             document.execCommand('copy');
-            showToast('Lien copié dans le presse-papier');
+            showToast('Link copied to clipboard');
         } catch (e) {
-            showToast('Impossible de copier le lien', 'error');
+            showToast('Unable to copy link', 'error');
         }
         
         document.body.removeChild(textArea);

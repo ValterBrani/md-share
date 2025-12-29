@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Markdown</title>
+    <title>Markdown Document</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -309,9 +309,9 @@
         function showError() {
             document.getElementById('content').innerHTML = `
                 <div class="error">
-                    <h1>😕 Aucun contenu</h1>
-                    <p>Ce lien ne contient pas de document Markdown valide.</p>
-                    <p><a href="index.html">Créer un nouveau document</a></p>
+                    <h1>😕 No content</h1>
+                    <p>This link does not contain a valid Markdown document.</p>
+                    <p><a href="index.html">Create a new document</a></p>
                 </div>
             `;
             // Cacher le bouton PDF s'il n'y a pas de contenu
@@ -325,7 +325,7 @@
             
             // État loading
             btn.classList.add('loading');
-            btn.innerHTML = '⏳ Génération...';
+            btn.innerHTML = '⏳ Generating...';
             
             // Options PDF
             const opt = {
