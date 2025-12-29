@@ -1,61 +1,53 @@
-# MD Partage
+# MD Share
 
-📝 Un éditeur et visualiseur Markdown simple avec fonctionnalité de partage.
+🇫🇷 [Lire en français](README.fr.md)
 
-## 🌟 Fonctionnalités
+📝 A simple Markdown editor and viewer with sharing capabilities.
 
-- ✏️ **Éditeur Markdown** - Écrivez ou collez votre contenu Markdown
-- 👁️ **Prévisualisation en temps réel** - Voyez le rendu instantanément
-- 📁 **Chargement de fichiers** - Importez vos fichiers `.md` ou `.txt`
-- 🔗 **Partage via URL** - Partagez votre contenu avec un simple lien
-- 💾 **Téléchargement** - Exportez votre contenu en fichier `.md`
-- 🎨 **Coloration syntaxique** - Code coloré pour de nombreux langages
-- 📱 **Responsive** - Fonctionne sur desktop et mobile
+## 🌟 Features
 
-## 🚀 Déploiement sur GitHub Pages
+- ✏️ **Markdown Editor** - Write or paste your Markdown content
+- 👁️ **Live Preview** - See the rendered output instantly
+- 🌓 **Dark/Light Mode** - Toggle between themes (great for CVs!)
+- 📁 **File Loading** - Import your `.md` or `.txt` files
+- 🔗 **URL Sharing** - Share your content with a simple link
+- ⏱️ **Link Expiration** - Set expiration time for shared links
+- 📄 **Multiple Share Modes** - Editor, Preview, or Clean read-only page
+- 💾 **Download** - Export your content as a `.md` file
+- 📑 **PDF Export** - Generate PDF from read-only view
+- 🎨 **Syntax Highlighting** - Code highlighting for many languages
+- 📱 **Responsive** - Works on desktop and mobile
 
-1. **Créer un repository GitHub**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/VOTRE-USERNAME/MdPartage.git
-   git push -u origin main
-   ```
+##  How to Use
 
-2. **Activer GitHub Pages**
-   - Allez dans les **Settings** de votre repository
-   - Cliquez sur **Pages** dans le menu de gauche
-   - Sous **Source**, sélectionnez **Deploy from a branch**
-   - Choisissez la branche `main` et le dossier `/ (root)`
-   - Cliquez sur **Save**
+### Write Markdown
+Type directly in the left editor and see the rendered output on the right.
 
-3. **Accéder à votre site**
-   - Votre site sera disponible à : `https://VOTRE-USERNAME.github.io/MdPartage/`
+### Load a File
+Click "📁 Load file" to import an existing Markdown file.
 
-## 💡 Comment utiliser
+### Share
+1. Click "🔗 Share"
+2. Choose your share mode:
+   - **Editor** - Recipients can edit the content
+   - **Preview** - Same page, read-only mode
+   - **Read-only** - Clean page, ideal for CVs
+3. Set expiration time (optional)
+4. Click "Generate Link" and copy it
 
-### Écrire du Markdown
-Tapez directement dans l'éditeur à gauche et voyez le rendu à droite.
+### Download
+Click "💾 Download" to save your work as a `.md` file.
 
-### Charger un fichier
-Cliquez sur "📁 Charger un fichier" pour importer un fichier Markdown existant.
+### Theme Toggle
+Click the 🌙/☀️ button in the top-right corner to switch between dark and light mode.
 
-### Partager
-1. Cliquez sur "🔗 Partager"
-2. Copiez le lien généré
-3. Envoyez ce lien - le destinataire verra votre contenu automatiquement
-
-### Télécharger
-Cliquez sur "💾 Télécharger" pour sauvegarder votre travail en fichier `.md`.
-
-## 🛠️ Technologies utilisées
+## 🛠️ Technologies Used
 
 - HTML5, CSS3, JavaScript (Vanilla)
-- [Marked.js](https://marked.js.org/) - Parser Markdown
-- [Highlight.js](https://highlightjs.org/) - Coloration syntaxique
+- [Marked.js](https://marked.js.org/) - Markdown Parser
+- [Highlight.js](https://highlightjs.org/) - Syntax Highlighting
+- [html2pdf.js](https://ekoopmans.github.io/html2pdf.js/) - PDF Generation
 
-## 📝 Licence
+## 📝 License
 
-MIT License - Libre d'utilisation et de modification.
+MIT License - See [LICENSE](LICENSE) file for details.
