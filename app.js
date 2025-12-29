@@ -32,12 +32,53 @@ const btnSharePreview = document.getElementById('btn-share-preview');
 const btnShareReadonly = document.getElementById('btn-share-readonly');
 const btnBack = document.getElementById('btn-back');
 const backToEditor = document.getElementById('back-to-editor');
+const themeToggle = document.getElementById('theme-toggle');
 
 // Variable pour stocker le lien de partage actuel
 let currentShareLink = '';
 
+// Theme management
+function initTheme() {
+    const savedTheme = localStorage.getItem('md-share-theme') || 'dark';
+    setTheme(savedTheme);
+}
+
+function setTheme(theme) {
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('md-share-theme', theme);
+    
+    // Update toggle button
+    const icon = themeToggle.querySelector('.icon');
+    const label = themeToggle.querySelector('.label');
+    
+    if (theme === 'dark') {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark';
+    } else {
+        icon.textContent = '☀️';
+        label.textContent = 'Light';
+    }
+    
+    // Update highlight.js theme
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+        hljsTheme.href = theme === 'dark' 
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css'
+            : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+}
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize theme
+    initTheme();
+    
     // Vérifier si un contenu est partagé via l'URL
     loadFromUrl();
     
@@ -47,6 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Configuration des événements
 function setupEventListeners() {
+    // Theme toggle
+    themeToggle.addEventListener('click', toggleTheme);
+    
     // Mise à jour de la prévisualisation en temps réel
     markdownInput.addEventListener('input', debounce(updatePreview, 150));
     

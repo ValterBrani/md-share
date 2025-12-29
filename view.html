@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-theme">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -16,6 +16,14 @@
             --primary: #6366f1;
             --primary-light: #818cf8;
             --accent: #06b6d4;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition-normal: 0.3s ease;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
             --bg-primary: #0f0f23;
             --bg-secondary: #1a1a2e;
             --bg-glass: rgba(255, 255, 255, 0.05);
@@ -23,9 +31,21 @@
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
+            --bg-gradient: radial-gradient(ellipse at top, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                           radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.7);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --bg-gradient: radial-gradient(ellipse at top, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+                           radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
         }
 
         * {
@@ -37,13 +57,48 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-primary);
-            background-image: 
-                radial-gradient(ellipse at top, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+            background-image: var(--bg-gradient);
             background-attachment: fixed;
             color: var(--text-primary);
             line-height: 1.7;
             min-height: 100vh;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: inherit;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        .theme-toggle .icon {
+            font-size: 1.1rem;
+            transition: transform var(--transition-normal);
+        }
+
+        .theme-toggle:hover .icon {
+            transform: rotate(20deg);
         }
 
         .container {
@@ -321,7 +376,8 @@
                 padding: 0;
             }
 
-            .pdf-header {
+            .pdf-header,
+            .theme-toggle {
                 display: none !important;
             }
 
@@ -393,6 +449,13 @@
                 right: 1rem;
             }
 
+            .theme-toggle {
+                top: 1rem;
+                left: 1rem;
+                padding: 0.4rem 0.6rem;
+                font-size: 0.75rem;
+            }
+
             .btn-pdf {
                 padding: 0.5rem 0.75rem;
                 font-size: 0.8rem;
@@ -400,7 +463,13 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+        <span class="icon">🌙</span>
+        <span class="label">Dark</span>
+    </button>
+
     <!-- PDF Button -->
     <div class="pdf-header">
         <button class="btn-pdf" id="btn-pdf" title="Download as PDF">
@@ -419,6 +488,47 @@
     </article>
 
     <script>
+        // Theme management
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        function initTheme() {
+            const savedTheme = localStorage.getItem('md-share-theme') || 'dark';
+            setTheme(savedTheme);
+        }
+
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('md-share-theme', theme);
+            
+            const icon = themeToggle.querySelector('.icon');
+            const label = themeToggle.querySelector('.label');
+            
+            if (theme === 'dark') {
+                icon.textContent = '🌙';
+                label.textContent = 'Dark';
+            } else {
+                icon.textContent = '☀️';
+                label.textContent = 'Light';
+            }
+            
+            // Update highlight.js theme
+            const hljsTheme = document.getElementById('hljs-theme');
+            if (hljsTheme) {
+                hljsTheme.href = theme === 'dark' 
+                    ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css'
+                    : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+        initTheme();
+
         // Marked configuration
         marked.setOptions({
             breaks: true,
