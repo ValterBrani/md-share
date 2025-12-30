@@ -19,6 +19,7 @@ const markdownInput = document.getElementById('markdown-input');
 const markdownPreview = document.getElementById('markdown-preview');
 const fileInput = document.getElementById('file-input');
 const btnClear = document.getElementById('btn-clear');
+const btnPdf = document.getElementById('btn-pdf');
 const btnShare = document.getElementById('btn-share');
 const btnDownload = document.getElementById('btn-download');
 const shareModal = document.getElementById('share-modal');
@@ -73,6 +74,61 @@ function toggleTheme() {
     setTheme(newTheme);
 }
 
+// PDF generation
+function generatePDF() {
+    const btn = btnPdf;
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+        // Clone content to avoid modifying original
+        const content = markdownPreview.cloneNode(true);
+        
+        // Clean h1-h6 styles (remove gradient backgrounds)
+        content.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+            heading.style.background = 'none';
+            heading.style.color = '#000';
+        });
+        
+        // Clean blockquote and code styles for print
+        content.querySelectorAll('blockquote, pre').forEach(element => {
+            element.style.background = '#f5f5f5';
+            element.style.borderColor = '#ddd';
+        });
+
+        const opt = {
+            margin: [10, 10, 10, 10],
+            filename: 'document.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        html2pdf().set(opt).from(content).save().then(() => {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg> ✅`;
+            setTimeout(() => {
+                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg> PDF`;
+            }, 2000);
+        }).catch(error => {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+            console.error('PDF generation error:', error);
+            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg> ❌`;
+            setTimeout(() => {
+                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg> PDF`;
+            }, 2000);
+        });
+    } catch (error) {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        console.error('PDF error:', error);
+        showToast('Error generating PDF', 'error');
+    }
+}
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize theme
@@ -98,6 +154,9 @@ function setupEventListeners() {
     
     // Bouton effacer
     btnClear.addEventListener('click', clearContent);
+    
+    // Bouton PDF
+    btnPdf.addEventListener('click', generatePDF);
     
     // Bouton partager - ouvre la modal
     btnShare.addEventListener('click', openShareModal);
